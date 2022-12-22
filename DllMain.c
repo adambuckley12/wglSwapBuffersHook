@@ -18,11 +18,6 @@ HGLRC gameContext;
 void initialise(void); 
 int unload = 0;
 
-void** original_wglSwapBuffers()
-{
-	return (void**)wglSwapBuffers;
-}
-
 
 long __stdcall wgl_swap_buffers(_In_ HDC hdc) {
 
@@ -78,7 +73,7 @@ void hooking(FARPROC wglSwapBuffers, HMODULE m_opengl_dll)
     MH_Initialize();
     OutputDebugString("Init Hook\n");
 
-	MH_CreateHook((LPVOID)wglSwapBuffers, wgl_swap_buffers, original_wglSwapBuffers()); //problem with code is original_wglSwapBuffers() - should be pointer to trampoline func to call original Wgl so it renders i think??>?>?>
+	MH_CreateHook((LPVOID)wglSwapBuffers, wgl_swap_buffers, 0); //problem with code is this 0 - should be pointer to trampoline func to call original Wgl so it renders i think??>?>?> 
     OutputDebugString("Created Hook\n");
 
     MH_EnableHook(wglSwapBuffers);
@@ -126,7 +121,6 @@ void initialise(void)
 
 
 }
-
 
 
 
