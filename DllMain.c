@@ -78,7 +78,7 @@ void hooking(FARPROC wglSwapBuffers, HMODULE m_opengl_dll)
     MH_Initialize();
     OutputDebugString("Init Hook\n");
 
-	MH_CreateHook((LPVOID)wglSwapBuffers, wgl_swap_buffers, original_wglSwapBuffers());
+	MH_CreateHook((LPVOID)wglSwapBuffers, wgl_swap_buffers, original_wglSwapBuffers()); //problem with code is original_wglSwapBuffers() - should be pointer to trampoline func to call original Wgl so it renders i think??>?>?>
     OutputDebugString("Created Hook\n");
 
     MH_EnableHook(wglSwapBuffers);
