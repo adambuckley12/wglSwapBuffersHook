@@ -18,14 +18,12 @@ int unload = 0;
 typedef int (WINAPI* PFNWGLSWAPBUFFERS)(HDC);
 PFNWGLSWAPBUFFERS pfnOrigWglSwapBuffers;
 
-long __stdcall wgl_swap_buffers(_In_ HDC hdc) {
+long wgl_swap_buffers(_In_ HDC hdc) {
 
 
-    OutputDebugString("wgl\n");
-    //OutputDebugString("wglSwapHook Called\n");
+    OutputDebugString("wglSwapHook Called\n");
     gameContext = wglGetCurrentContext();
 
-    //Create our own context if it hasn't been created yet
     if (contextCreated == 0)
     {
 
@@ -34,6 +32,7 @@ long __stdcall wgl_swap_buffers(_In_ HDC hdc) {
 
         //Make thread use our context
         wglMakeCurrent(hdc, myContext);
+
 
         //Setup our context
         glMatrixMode(GL_PROJECTION);
@@ -47,15 +46,18 @@ long __stdcall wgl_swap_buffers(_In_ HDC hdc) {
     //Make thread use our context
     wglMakeCurrent(hdc, myContext);
 
-    //Draw something (a rectangle here)
-    glColor3f(1.0f, 0, 0);
+    //Draw
+    glColor3f(0, 1.0f, 0);
     glBegin(GL_QUADS);
-    glVertex2f(0, 190.0f);
-    glVertex2f(100.0f, 190.0f);
+	
+	//shape
+    glVertex2f(300, 500.0f);
+    glVertex2f(100.0f, 500.0f);
     glVertex2f(100.0f, 290.0f);
-    glVertex2f(0, 290.0f);
+    glVertex2f(300, 290.0f);
+	
+	
     glEnd();
-
     //Make thread to use games context again
     wglMakeCurrent(hdc, gameContext);
 
@@ -65,13 +67,10 @@ long __stdcall wgl_swap_buffers(_In_ HDC hdc) {
 
 void hooking(FARPROC wglSwapBuffers, HMODULE m_opengl_dll)
 {
-
-    //init 
-    OutputDebugString(m_opengl_dll);
     MH_Initialize();
     OutputDebugString("Init Hook\n");
 
-	MH_CreateHook((LPVOID)wglSwapBuffers, wgl_swap_buffers, (LPVOID*)&pfnOrigWglSwapBuffers); //problem with code is this 0 - should be pointer to trampoline func to call original Wgl so it renders i think??>?>?> 
+	MH_CreateHook((LPVOID)wglSwapBuffers, wgl_swap_buffers, (LPVOID*)&pfnOrigWglSwapBuffers); 
     OutputDebugString("Created Hook\n");
 
     MH_EnableHook(wglSwapBuffers);
@@ -83,7 +82,6 @@ void hooking(FARPROC wglSwapBuffers, HMODULE m_opengl_dll)
         }
         Sleep(250);
     }
-
 }
 
 void initialise(void)
@@ -107,7 +105,6 @@ void initialise(void)
         Sleep(500);
     }
 
-
     OutputDebugString("Found wglswapbuffers\n");
     //OutputDebugString(mc.wgl_swap_buffers + "\n");
 
@@ -116,8 +113,6 @@ void initialise(void)
     while (!unload) {
         Sleep(500);
     }
-
-
 }
 
 BOOL WINAPI DllMain(
@@ -126,14 +121,10 @@ BOOL WINAPI DllMain(
     LPVOID lpvReserved)  // reserved
 {
     DisableThreadLibraryCalls(hinstDLL);
-    LPVOID* original_wgl_swapbuffers = (LPVOID*)malloc(sizeof(LPVOID));
-
-
     switch (fdwReason)
     {
     case DLL_PROCESS_ATTACH:
     {
-       
         CloseHandle(CreateThread(0, 0, (LPTHREAD_START_ROUTINE)initialise, 0, 0, 0));
 
         break;
