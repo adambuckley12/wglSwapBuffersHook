@@ -10,14 +10,13 @@
 
 FARPROC wglSwapBuffers = NULL;
 HMODULE m_opengl_dll;
-
-
 int contextCreated = 0;
 HGLRC myContext;
 HGLRC gameContext;
 void initialise(void); 
 int unload = 0;
-
+typedef int (WINAPI* PFNWGLSWAPBUFFERS)(HDC);
+PFNWGLSWAPBUFFERS pfnOrigWglSwapBuffers;
 
 long __stdcall wgl_swap_buffers(_In_ HDC hdc) {
 
@@ -60,20 +59,19 @@ long __stdcall wgl_swap_buffers(_In_ HDC hdc) {
     //Make thread to use games context again
     wglMakeCurrent(hdc, gameContext);
 
-    return hdc;
+    return pfnOrigWglSwapBuffers(hdc);
 
 }
 
 void hooking(FARPROC wglSwapBuffers, HMODULE m_opengl_dll)
 {
 
-
     //init 
     OutputDebugString(m_opengl_dll);
     MH_Initialize();
     OutputDebugString("Init Hook\n");
 
-	MH_CreateHook((LPVOID)wglSwapBuffers, wgl_swap_buffers, 0); //problem with code is this 0 - should be pointer to trampoline func to call original Wgl so it renders i think??>?>?> 
+	MH_CreateHook((LPVOID)wglSwapBuffers, wgl_swap_buffers, (LPVOID*)&pfnOrigWglSwapBuffers); //problem with code is this 0 - should be pointer to trampoline func to call original Wgl so it renders i think??>?>?> 
     OutputDebugString("Created Hook\n");
 
     MH_EnableHook(wglSwapBuffers);
@@ -121,8 +119,6 @@ void initialise(void)
 
 
 }
-
-
 
 BOOL WINAPI DllMain(
     HINSTANCE hinstDLL,  // handle to DLL module
