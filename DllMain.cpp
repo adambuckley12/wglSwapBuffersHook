@@ -75,7 +75,7 @@ bool init_imgui()
 long wgl_swap_buffers(_In_ HDC hdc) {
 
 
-    OutputDebugString("wglSwapHook Called\n");
+    OutputDebugString(L"wglSwapHook Called\n");
 
 
     if (window == nullptr)
@@ -157,13 +157,13 @@ long wgl_swap_buffers(_In_ HDC hdc) {
 void hooking(FARPROC wglSwapBuffers, HMODULE m_opengl_dll)
 {
     MH_Initialize();
-    OutputDebugString("Init Hook\n");
+    OutputDebugString(L"Init Hook\n");
 
 	MH_CreateHook((LPVOID)wglSwapBuffers, wgl_swap_buffers, (LPVOID*)&pfnOrigWglSwapBuffers); 
-    OutputDebugString("Created Hook\n");
+    OutputDebugString(L"Created Hook\n");
 
     MH_EnableHook(wglSwapBuffers);
-    OutputDebugString("Enabled Hook\n");
+    OutputDebugString(L"Enabled Hook\n");
 
     while (!unload) {
         if (GetAsyncKeyState(VK_DELETE)) {
@@ -176,17 +176,17 @@ void hooking(FARPROC wglSwapBuffers, HMODULE m_opengl_dll)
 void initialise(void)
 {
     
-    OutputDebugString("[Controller] Initialise called.\n");
+    OutputDebugString(L"[Controller] Initialise called.\n");
 
     m_opengl_dll = GetModuleHandleA("opengl32.dll");
 
     while (!m_opengl_dll)
     {
         Sleep(500);
-        m_opengl_dll = GetModuleHandle("opengl32.dll");
+        m_opengl_dll = GetModuleHandle(L"opengl32.dll");
     }
 
-    OutputDebugString("Found openGl\n");
+    OutputDebugString(L"Found openGl\n");
 
     while (!(wglSwapBuffers))
     {
@@ -194,7 +194,7 @@ void initialise(void)
         Sleep(500);
     }
 
-    OutputDebugString("Found wglswapbuffers\n");
+    OutputDebugString(L"Found wglswapbuffers\n");
     //OutputDebugString(mc.wgl_swap_buffers + "\n");
 
     hooking(wglSwapBuffers, m_opengl_dll);
