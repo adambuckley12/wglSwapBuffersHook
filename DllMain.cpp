@@ -7,6 +7,10 @@
 #include <stdbool.h>
 //#include <gl/GL.h>
 //#include <gl/GLU.h>
+#include <GLFW/glfw3.h>
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_glfw.h>
+#include <imgui/imgui_impl_opengl3.h>
 
 FARPROC wglSwapBuffers = NULL;
 HMODULE m_opengl_dll;
@@ -18,10 +22,95 @@ int unload = 0;
 typedef int (WINAPI* PFNWGLSWAPBUFFERS)(HDC);
 PFNWGLSWAPBUFFERS pfnOrigWglSwapBuffers;
 
+static GLFWwindow* window;
+static ImGuiContext* imgui_context;
+const char* glsl_version = "#version 130";
+
+static void glfw_error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Glfw Error %d: %s\n", error, description);
+}
+
+bool init_window()
+{
+
+    // Setup window
+    glfwSetErrorCallback(glfw_error_callback);
+    if (!glfwInit())
+        return 1;
+
+
+    // GL 3.0 + GLSL 130
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+
+    // Create window with graphics context
+    window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
+    if (window == NULL)
+        return 1;
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1); // Enable vsync
+
+    return true;
+}
+
+bool init_imgui()
+{
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    imgui_context = ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsLight();
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init(glsl_version);
+
+    return true;
+}
+
 long wgl_swap_buffers(_In_ HDC hdc) {
 
 
     OutputDebugString("wglSwapHook Called\n");
+
+
+    if (window == nullptr)
+    {
+        init_window();
+    }
+
+    if (glfwWindowShouldClose(window))
+    {
+        return 0;
+    }
+
+    if (imgui_context == nullptr)
+    {
+        init_imgui();
+    }
+
+
+    // Poll and handle events (inputs, window resize, etc.)
+    // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
+    // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
+    // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
+    // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
+    glfwPollEvents();
+
+    // Start the Dear ImGui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    bool show = true;
+
+    ImGui::ShowDemoWindow(&show);
+
+    /*
     gameContext = wglGetCurrentContext();
 
     if (contextCreated == 0)
@@ -60,7 +149,7 @@ long wgl_swap_buffers(_In_ HDC hdc) {
     glEnd();
     //Make thread to use games context again
     wglMakeCurrent(hdc, gameContext);
-
+*/
     return pfnOrigWglSwapBuffers(hdc);
 
 }
