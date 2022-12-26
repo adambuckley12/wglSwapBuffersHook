@@ -4,7 +4,7 @@
 #include <strsafe.h>
 #include "include/MinHook.h"
 #include <stdbool.h>
-//#include <GLFW/glfw3.h>
+#include <GLFW/glfw3.h>
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_impl_glfw.h>
@@ -27,9 +27,8 @@ const char* glsl_version = "#version 130";
 
 DWORD WINAPI init_context()
 {
-
-    // HWND activeWindowHandle = GetActiveWindow
-    GLFWwindow* currentContext = (GLFWwindow*)wglGetCurrentContext();
+	
+    GLFWwindow* currentContext = glfwGetCurrentContext();
 
     if (!currentContext)
     {
@@ -38,7 +37,7 @@ DWORD WINAPI init_context()
     }
     window = currentContext;
 
-    ImGui::CreateContext();
+    ImGui::SetCurrentContext(ImGui::CreateContext());
     ImGui::StyleColorsDark();
 
     // Setup Platform/Renderer bindings
@@ -56,33 +55,19 @@ long wgl_swap_buffers(_In_ HDC hdc) {
 
     if (window)
     {
-       // glfwPollEvents();
-
-        // Start the Dear ImGui frame
+		
        ImGui_ImplOpenGL3_NewFrame();
        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
+       ImGui::NewFrame();
 
         bool show = true;
-
         ImGui::ShowDemoWindow(&show);
-
+		
         // Rendering
         ImGui::Render();
-
         OutputDebugString(L"[Controller] Called ImGui::Render.\n");
-
-        int display_w, display_h;
-
-        //glfwGetFramebufferSize(window, &display_w, &display_h);
-        //glViewport(0, 0, display_w, display_h);
-        //glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-        //glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
-
-    
-
     return pfnOrigWglSwapBuffers(hdc);
 
 }
@@ -107,7 +92,6 @@ void hooking(FARPROC wglSwapBuffers, HMODULE m_opengl_dll)
 
 void initialise(void)
 {
-    
     OutputDebugString(L"[Controller] Initialise called.\n");
 
     m_opengl_dll = GetModuleHandleA("opengl32.dll");
