@@ -11,6 +11,7 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
+#include <winuser.h>
 
 #define IMGUI_IMPL_OPENGL_LOADER_GLAD2
 
@@ -71,12 +72,10 @@ DWORD WINAPI init_context()
         return FALSE;
 
     const char* glsl_version = "#version 130";
-
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-    // HWND activeWindowHandle = GetActiveWindow();
-
+    // HWND activeWindowHandle = GetActiveWindow
     GLFWwindow* currentContext = glfwGetCurrentContext();
 
     if (!currentContext)
@@ -86,22 +85,10 @@ DWORD WINAPI init_context()
     }
 
     window = currentContext;
-
-    //// Create window with graphics context
-    // window = glfwCreateWindow(800, 600, "Hello World :D", NULL, currentContext);
-    //
-    //if (window == NULL)
-    //{
-    //	return FALSE;
-    //}
-    //
-    //glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
     // Initialize OpenGL loader
-
     bool err = gladLoadGL(glfwGetProcAddress) == 0;
-
     if (err)
     {
         OutputDebugString(L"Failed to initialize OpenGL loader.\n");
@@ -111,7 +98,6 @@ DWORD WINAPI init_context()
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     io = ImGui::GetIO(); (void)io;
-
     ImGui::StyleColorsDark();
 
     // Setup Platform/Renderer bindings
@@ -126,12 +112,6 @@ long wgl_swap_buffers(_In_ HDC hdc) {
 
     OutputDebugString(L"wglSwapHook Called\n");
 
-    // Poll and handle events (inputs, window resize, etc.)
-    // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-    // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
-    // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
-  
-    // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
     if (window)
     {
         glfwPollEvents();
@@ -158,6 +138,47 @@ long wgl_swap_buffers(_In_ HDC hdc) {
         //glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
+
+    /*gameContext = wglGetCurrentContext();
+
+    if (gameContext == NULL);
+    {
+
+        //Create new contextpMC
+        myContext = wglCreateContext(hdc);
+
+        //Make thread use our context
+        wglMakeCurrent(hdc, myContext);
+
+
+        //Setup our context
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0.0, 640, 480, 0.0, 1.0, -1.0);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        glClearColor(0, 0, 0, 1.0);
+        contextCreated++;
+    }
+
+    //Make thread use our context
+    wglMakeCurrent(hdc, myContext);
+
+    //Draw
+    glColor3f(0, 1.0f, 0);
+    glBegin(GL_QUADS);
+
+    //shape
+    glVertex2f(300, 500.0f);
+    glVertex2f(100.0f, 500.0f);
+    glVertex2f(100.0f, 290.0f);
+    glVertex2f(300, 290.0f);
+
+
+    glEnd();
+    //Make thread to use games context again
+    wglMakeCurrent(hdc, gameContext);
+*/
     return pfnOrigWglSwapBuffers(hdc);
 
 }
@@ -170,16 +191,16 @@ void hooking(FARPROC wglSwapBuffers, HMODULE m_opengl_dll)
 	MH_CreateHook((LPVOID)wglSwapBuffers, wgl_swap_buffers, (LPVOID*)&pfnOrigWglSwapBuffers); 
     OutputDebugString(L"Created Hook\n");
 
+    
+
+    MH_EnableHook(wglSwapBuffers);
+    OutputDebugString(L"Enabled Hook\n");
+
     if (!init_context())
     {
         OutputDebugString(L"Failed to initialize context - no point in hooking...\n");
         return;
     }
-
-    MH_EnableHook(wglSwapBuffers);
-    OutputDebugString(L"Enabled Hook\n");
-
-
 }
 
 void initialise(void)
@@ -210,18 +231,45 @@ void initialise(void)
 
 }
 
+VOID CALLBACK timer_callback(HWND hwnd, UINT uMsg, UINT idEvent, DWORD dwTime)
+{
+    OutputDebugString(L"Timer Callback");
+    KillTimer(hwnd, idEvent);
+    initialise();
+    
+}
+
+void setuptimer()
+{
+    HWND windowHwnd = FindWindowA(NULL, "Simple example");
+    UINT_PTR timerId = SetTimer(windowHwnd, 42, 10, (TIMERPROC)timer_callback);
+
+    if (timerId == 0)
+    {
+        OutputDebugString((LPCWSTR)GetLastError());
+        OutputDebugString(L"[Controller] Failed to create timer.\n");
+    }
+    else
+    {
+        OutputDebugString(L"[Controller] Created timer.\n");
+    }
+}
+
+
+
 BOOL WINAPI DllMain(
     HINSTANCE hinstDLL,  // handle to DLL module
     DWORD fdwReason,     // reason for calling function
     LPVOID lpvReserved)  // reserved
 {
+    OutputDebugString(L"DLL MAIN CALLED\n");
     DisableThreadLibraryCalls(hinstDLL);
     switch (fdwReason)
     {
     case DLL_PROCESS_ATTACH:
     {
-        // CloseHandle(CreateThread(0, 0, (LPTHREAD_START_ROUTINE)initialise, 0, 0, 0));
-        initialise();
+		OutputDebugString(L"[Controller] DLL_PROCESS_ATTACH called.\n");
+        CloseHandle(CreateThread(0, 0, (LPTHREAD_START_ROUTINE)setuptimer, 0, 0, 0));
         break;
     }
     default: {

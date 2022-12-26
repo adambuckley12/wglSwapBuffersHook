@@ -146,14 +146,14 @@ int CALLBACK WinMain(
 	glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
 		sizeof(vertices[0]), (void*)(sizeof(float) * 2));
 
-	hmoduleController = LoadLibrary(
-		dllName
-	);
+	//hmoduleController = LoadLibrary(
+	//	dllName
+	//);
 
-	if (!hmoduleController)
+	/*if (!hmoduleController)
 	{
 		MessageBox(NULL,
-			L"Failed to load Controller library",
+			L"Failed to load Controlleer library",
 			L"Game Controller Loader",
 			NULL);
 
@@ -162,7 +162,7 @@ int CALLBACK WinMain(
 	else
 	{
 		OutputDebugString(L"Loaded library.\n");
-	}
+	}*/
 
 	while (!glfwWindowShouldClose(window))
 	{
