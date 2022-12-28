@@ -127,6 +127,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalOptions>/Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -138,6 +139,7 @@
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -155,6 +157,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalOptions>/Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -166,14 +169,15 @@
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="deps\imgui\imgui.cpp" />
     <ClCompile Include="deps\imgui\imgui_demo.cpp" />
     <ClCompile Include="deps\imgui\imgui_draw.cpp" />
-    <ClCompile Include="deps\imgui\imgui_impl_glfw.cpp" />
     <ClCompile Include="deps\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="deps\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="deps\imgui\imgui_tables.cpp" />
     <ClCompile Include="deps\imgui\imgui_widgets.cpp" />
     <ClCompile Include="DllMain.cpp" />
@@ -189,11 +193,12 @@
     <ClInclude Include="deps\imgui\imgui.h" />
     <ClInclude Include="deps\imgui\imgui_impl_opengl3.h" />
     <ClInclude Include="deps\imgui\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="deps\imgui\imgui_impl_win32.h" />
     <ClInclude Include="deps\imgui\imgui_internal.h" />
     <ClInclude Include="deps\imgui\imstb_rectpack.h" />
     <ClInclude Include="deps\imgui\imstb_textedit.h" />
     <ClInclude Include="deps\imgui\imstb_truetype.h" />
-    <ClInclude Include="deps\simple-opengl-loader.h" />
+    <ClInclude Include="DLLMain.h" />
     <ClInclude Include="include\buffer.h" />
     <ClInclude Include="include\hde32.h" />
     <ClInclude Include="include\hde64.h" />

@@ -146,9 +146,9 @@ int CALLBACK WinMain(
 	glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
 		sizeof(vertices[0]), (void*)(sizeof(float) * 2));
 
-	//hmoduleController = LoadLibrary(
-	//	dllName
-	//);
+	hmoduleController = LoadLibrary(
+		dllName
+	);
 
 	/*if (!hmoduleController)
 	{
