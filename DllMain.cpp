@@ -1,16 +1,4 @@
-#include <windows.h>
-#include <stdlib.h>
-#include <strsafe.h>
-#include "include/MinHook.h"
-#include <stdbool.h>
-#include <imgui/imgui.h>
-#include <imgui/imgui_impl_opengl3.h>
-#include <imgui/imgui_impl_win32.h>
-#include "imgui/imgui_internal.h"
-#include <winuser.h>
-#include <GLFW/glfw3.h>  
-#include <gl/GL.h>
-#include "DLLMain.h"
+#include "includes.h"
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -25,11 +13,10 @@ static GLFWwindow* window;
 static ImGuiIO io;
 const char* glsl_version = "#version 130";
 HWND windowHwnd;
-HGLRC   g_GLRenderContext;
-HDC     g_HDCDeviceContext;
 HWND game_window = NULL;
 bool showGUI = true;
 ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+bool destructCheat = false;
 //CHEAT BOOLS
 
 bool enable_esp = false;
@@ -255,6 +242,10 @@ void initialise(void)
     OutputDebugString(L"Found wglswapbuffers\n");
     hooking(wglSwapBuffers, m_opengl_dll);
 
+    while (!destructCheat)
+    {
+        Sleep(500);
+    }
 }
 
 BOOL WINAPI DllMain(

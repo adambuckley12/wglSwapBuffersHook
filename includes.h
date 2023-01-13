@@ -1,0 +1,13 @@
+#pragma once
+#include <windows.h>
+#include <stdlib.h>
+#include "include/MinHook.h"
+#include <stdbool.h>
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_opengl3.h>
+#include <imgui/imgui_impl_win32.h>
+#include "imgui/imgui_internal.h"
+#include <winuser.h>
+#include <GLFW/glfw3.h>  
+#include <gl/GL.h>
+#include "DLLMain.h"

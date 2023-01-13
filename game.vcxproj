@@ -23,6 +23,7 @@
     <ProjectGuid>{CF0F2C86-8599-47E2-A61F-B3D057A152D2}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>wglSwapBufferHook</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -180,13 +181,14 @@
     <ClCompile Include="deps\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="deps\imgui\imgui_tables.cpp" />
     <ClCompile Include="deps\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="DllMain.cpp" />
+    <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="include\buffer.c" />
     <ClCompile Include="include\glad\src\gl.c" />
     <ClCompile Include="include\hde32.c" />
     <ClCompile Include="include\hde64.c" />
     <ClCompile Include="include\hook.c" />
     <ClCompile Include="include\trampoline.c" />
+    <ClCompile Include="unloadDll.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\imgui\imconfig.h" />
@@ -199,6 +201,7 @@
     <ClInclude Include="deps\imgui\imstb_textedit.h" />
     <ClInclude Include="deps\imgui\imstb_truetype.h" />
     <ClInclude Include="DLLMain.h" />
+    <ClInclude Include="includes.h" />
     <ClInclude Include="include\buffer.h" />
     <ClInclude Include="include\hde32.h" />
     <ClInclude Include="include\hde64.h" />
